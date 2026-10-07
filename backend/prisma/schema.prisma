@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SignalType {
+  FUNDING
+  HIRING
+  LEADERSHIP_CHANGE
+  PRODUCT_LAUNCH
+  PRICING_CHANGE
+  WEBSITE_COPY
+  OTHER
+}
+
+enum Materiality {
+  SIGNAL
+  NOISE
+}
+
+model Company {
+  id         String     @id @default(cuid())
+  name       String?
+  domain     String     @unique
+  websiteUrl String
+  industry   String?
+  brief      Json?
+  score      Score?
+  snapshots  Snapshot[]
+  facts      Fact[]
+  signals    Signal[]
+  contacts   Contact[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+// A full capture of what we knew about a company at one point in time
+model Snapshot {
+  id         String   @id @default(cuid())
+  companyId  String
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  data       Json
+  capturedAt DateTime @default(now())
+
+  @@index([companyId, capturedAt])
+}
+
+// One claim from one source, kept separately so conflicts can be resolved
+model Fact {
+  id         String   @id @default(cuid())
+  companyId  String
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  field      String // e.g. "employee_count", "funding_stage"
+  value      String
+  source     String // URL or source name
+  sourceType String // e.g. "official_site", "news", "directory"
+  observedAt DateTime @default(now())
+  confidence Float    @default(0.5)
+  isChosen   Boolean  @default(false) // the value we decided to trust
+  reasoning  String? // why this value won, for communicating uncertainty
+
+  @@index([companyId, field])
+}
+
+// A detected change between two snapshots
+model Signal {
+  id           String      @id @default(cuid())
+  companyId    String
+  company      Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  type         SignalType
+  materiality  Materiality
+  summary      String
+  whyItMatters String?
+  detectedAt   DateTime    @default(now())
+
+  @@index([companyId, detectedAt])
+}
+
+model Score {
+  id         String   @id @default(cuid())
+  companyId  String   @unique
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  total      Float
+  breakdown  Json // e.g. { fit: 30, timing: 25, reachability: 20 }
+  reasons    String[]
+  computedAt DateTime @default(now())
+}
+
+model Contact {
+  id        String     @id @default(cuid())
+  companyId String
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name      String?
+  title     String
+  persona   String // e.g. "Head of Engineering"
+  reasoning String
+  sourceUrl String?
+  outreach  Outreach[]
+}
+
+model Outreach {
+  id        String   @id @default(cuid())
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  channel   String   @default("email")
+  subject   String?
+  body      String
+  context   Json? // which facts and signals the message used
+  createdAt DateTime @default(now())
+}

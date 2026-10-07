@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f3ef">
+    <title>Company Brief — Decide where to focus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="Company Brief home">
+          <span class="brand-mark" aria-hidden="true">C</span>
+          <span>company<span class="brand-light">brief</span></span>
+        </a>
+        <div class="workspace-label">WORKSPACE</div>
+        <nav class="side-nav" aria-label="Main navigation">
+          <a class="nav-item active" href="#today"><span class="nav-icon">◷</span> Today <span class="nav-count" id="sidebar-count">0</span></a>
+          <a class="nav-item" href="#companies"><span class="nav-icon">▦</span> Companies</a>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="sidebar-note">
+            <span class="note-dot"></span>
+            <div><strong>Your private workspace</strong><span>Research stays on this machine.</span></div>
+          </div>
+          <div class="profile-chip"><span class="avatar">PE</span><span><strong>Product explorer</strong><small>Personal workspace</small></span><span class="more-icon">···</span></div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="breadcrumbs">Workspace <span>/</span> <strong>Today</strong></div>
+          <div class="topbar-right"><span class="privacy-pill"><span></span> Private workspace</span><span class="date-label" id="today-date"></span></div>
+        </header>
+
+        <section class="page-heading" id="today">
+          <div class="heading-copy">
+            <div class="eyebrow"><span class="eyebrow-line"></span> YOUR DAILY BRIEF</div>
+            <h1>Make your next move <em>matter.</em></h1>
+            <p>Know which companies deserve your attention — and why.</p>
+          </div>
+          <div class="heading-stat"><span class="stat-label">IN YOUR RADAR</span><strong id="company-count">0</strong><span>companies tracked</span></div>
+        </section>
+
+        <section class="focus-banner" aria-label="Today's focus">
+          <div class="focus-icon">✳</div>
+          <div class="focus-copy"><strong>Today’s focus</strong><span id="focus-copy">Add your first company to uncover the most promising next step.</span></div>
+          <div class="focus-right"><span class="focus-live"></span> LIVE PRIORITIES</div>
+        </section>
+
+        <section class="research-card" aria-labelledby="research-title">
+          <div class="research-card-head">
+            <div class="research-icon">↗</div>
+            <div><h2 id="research-title">Find your next opportunity</h2><p>Research one company or compare a shortlist against your ideal customer profile.</p></div>
+            <span class="step-chip">01 <span>/</span> RESEARCH</span>
+          </div>
+          <form id="research-form">
+            <div class="research-modes" role="group" aria-label="Research input type">
+              <button class="mode-button active" id="single-mode" type="button" aria-pressed="true">One company</button>
+              <button class="mode-button" id="batch-mode" type="button" aria-pressed="false">Compare a list <span>UP TO 20</span></button>
+            </div>
+            <div id="single-input">
+              <label class="field-label" for="company-url">COMPANY WEBSITE</label>
+              <div class="url-row">
+                <span class="url-icon">◎</span>
+                <input id="company-url" name="url" type="text" inputmode="url" placeholder="Paste a company website, e.g. linear.app" required maxlength="2048" autocomplete="url">
+              </div>
+            </div>
+            <div id="batch-input" hidden>
+              <label class="field-label" for="company-urls">COMPANY WEBSITES <span>ONE PER LINE · UP TO 20</span></label>
+              <textarea class="context-input batch-input" id="company-urls" name="urls" placeholder="linear.app&#10;figma.com&#10;notion.so" rows="4" maxlength="45000"></textarea>
+              <div class="batch-hint">We’ll research the list in parallel and keep successful results if a site can’t be reached.</div>
+            </div>
+            <div class="submit-row">
+              <button class="primary-button" id="research-button" type="submit"><span>Research company</span><span class="button-arrow">↗</span></button>
+              <span class="submit-hint" id="submit-hint">Add one company to your radar.</span>
+            </div>
+            <label class="field-label context-label" for="ideal-customer">WHAT ARE YOU LOOKING FOR? <span>OPTIONAL · MAKES PRIORITIES MORE USEFUL</span></label>
+            <input class="context-input" id="ideal-customer" name="context" type="text" placeholder="e.g. Series A B2B SaaS companies hiring product engineers" maxlength="1000">
+            <div class="form-foot"><span><span class="lock-icon">⌑</span> Public website information only</span><span id="form-status" role="status" aria-live="polite">Usually takes a few seconds</span></div>
+            <div class="batch-results" id="batch-results" role="status" aria-live="polite" hidden></div>
+          </form>
+        </section>
+
+        <section class="companies-section" id="companies">
+          <div class="section-heading">
+            <div><div class="eyebrow"><span class="eyebrow-line"></span> THE SHORTLIST</div><h2>Worth your attention <span class="shortlist-badge">TOP 5</span></h2></div>
+            <div class="section-tools"><span class="sort-label">SORTED BY PRIORITY</span><button class="refresh-button" id="refresh-button" type="button" aria-label="Refresh companies">↻</button></div>
+          </div>
+          <div class="company-list" id="company-list" aria-live="polite">
+            <div class="loading-row">Loading your company brief…</div>
+          </div>
+          <div class="list-foot" id="list-foot"><span class="list-foot-dot"></span> Only the five highest-priority companies are highlighted.</div>
+        </section>
+
+        <footer class="page-footer"><span>COMPANY BRIEF <span class="footer-dot">·</span> EARLY ACCESS</span><span>Research is a starting point. Verify important details before you act.</span></footer>
+      </main>
+    </div>
+    <dialog class="detail-dialog" id="company-dialog" aria-labelledby="detail-name">
+      <div class="dialog-content" id="dialog-content"></div>
+    </dialog>
+  </body>
+</html>
